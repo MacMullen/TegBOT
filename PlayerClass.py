@@ -1,12 +1,16 @@
 class Player:
-    def __init__(self, name, color, startingCountries):
+    def __init__(self, name, color, mission):
         self.name = name
         self.color = color
-        self.countries = startingCountries
-        self.mission = 0
-
-    def addMission(self, mission):
+        self.countries = set([])
         self.mission = mission
+        self.human = True
+
+    def convertToBOT(self):
+        self.human = False
+
+    def addCountry(self, country):
+        self.countries.add(country)
 
     def changeColor(self, newColor):
         self.color = newColor
