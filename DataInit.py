@@ -2,8 +2,6 @@ import pickle
 from pathlib import Path
 
 from CountryClass import *
-from TegClass import *
-from PlayerClass import *
 
 
 def initCountryStruct():

@@ -1,6 +1,4 @@
-import pickle
-from pathlib import Path
-from pick import pick
+import random
 
 from CountryClass import *
 from TegClass import *
@@ -36,14 +34,8 @@ while True:
 amountOfInitialCountries = int(len(listOfCountries) / (numberOfPlayers + numberOfBots))
 amountOfExtraCountries = len(listOfCountries) % (numberOfPlayers + numberOfBots)
 print("Each player will start with {} countries".format(amountOfInitialCountries))
-print("There are {} countries to raffle between players".format(amountOfExtraCountries))
-title = 'How do you want to raffle the countries: '
-options = ['Dices', 'Random']
-option, index = pick(options, title)
-print(option)
-print(index)
 
-for i in range(numberOfPlayers):
+for i in range(1, numberOfPlayers):
     name = input("What is the name of player {}? ".format(i))
     while True:
         color = input("What color do you want to use? ")
@@ -69,10 +61,42 @@ for i in range(numberOfBots):
     listOfColors.remove(listOfColors[0])
 
     mission = input("Which is BOT_{} mission? ".format(i))
-    player = Player(name, color, mission)
+    bot = Player(name, color, mission)
 
     print("Which countries is BOT_{} starting with?".format(i))
-    initPlayerContries(amountOfInitialCountries, listOfCountries, player)
+    initPlayerContries(amountOfInitialCountries, listOfCountries, bot)
 
-    player.convertToBOT()
-    listOfPlayers.append(player)
+    bot.convertToBOT()
+    listOfPlayers.append(bot)
+
+# Raffle the extra countries.
+if amountOfExtraCountries != 0:
+    # Build a list with countries that don't have owners.
+    extraCountries = []
+    for j in listOfCountries:
+        if j.owner == 0:
+            extraCountries.append(j)
+    # Ask how the players want to raffle the countries.
+    print("There are {} countries to raffle between players".format(amountOfExtraCountries))
+    print("How do you want to raffle the countries:")
+    print("1. Dices")
+    print("2. Random")
+    sel_input = int(input("Select:"))
+    if sel_input == 1:
+        for i in range(len(extraCountries)):
+            print("Roll the dice to win {}".format(extraCountries[i].name))
+            winner = input("Who won?")
+            for p in listOfPlayers:
+                if p.name == winner:
+                    p.countries.add(extraCountries[i])
+                    extraCountries[i].owner = winner
+    if sel_input == 2:
+        playersInRaffle = listOfPlayers
+        for x in range(len(extraCountries)):
+            winner = random.randint(0, len(playersInRaffle))
+            print("{} won {}".format(playersInRaffle[winner].name, extraCountries[x].name))
+            playersInRaffle[winner].countries.add(extraCountries[x])
+            extraCountries[x].owner = playersInRaffle[winner].name
+            playersInRaffle.remove(winner)
+        del playersInRaffle
+    del extraCountries

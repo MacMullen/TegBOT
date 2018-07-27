@@ -20,6 +20,7 @@ def initPlayerContries(amountOfInitialCountries, listOfCountries, player):
         for j in listOfCountries:
             if (j.name == country):
                 player.addCountry(j)
+                j.owner = player.name
 
 def searchInCountries(listOfCountries, country):
     for j in listOfCountries:
