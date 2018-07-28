@@ -1,5 +1,3 @@
-import random
-
 from CountryClass import *
 from TegClass import *
 from PlayerClass import *
@@ -8,6 +6,9 @@ from AuxiliaryFunctions import *
 
 # Initialize the map of game.
 listOfCountries, NACountries, SACountries, CACountries, EUCountries, AFRCountries, ASIACountries, OCECountries = initCountryStruct()
+
+# Initialize the mission list
+missionList = initMissionList()
 
 # Initialize the list of possible colors.
 listOfColors = ["Green", "Yellow", "Blue", "White", "Black", "Red"]
@@ -45,9 +46,7 @@ for i in range(1, numberOfPlayers):
             break
     listOfColors.remove(color)
 
-    mission = input("What is your mission? ")
-    # (TODO)Make the player select his mission from a list.
-    player = Player(name, color, mission)
+    player = Player(name, color)
 
     print("Which countries are you starting with? ")
     initPlayerContries(amountOfInitialCountries, listOfCountries, player)
@@ -60,8 +59,7 @@ for i in range(numberOfBots):
     color = listOfColors[0]
     listOfColors.remove(listOfColors[0])
 
-    mission = input("Which is BOT_{} mission? ".format(i))
-    bot = Player(name, color, mission)
+    bot = Player(name, color)
 
     print("Which countries is BOT_{} starting with?".format(i))
     initPlayerContries(amountOfInitialCountries, listOfCountries, bot)
@@ -71,32 +69,16 @@ for i in range(numberOfBots):
 
 # Raffle the extra countries.
 if amountOfExtraCountries != 0:
-    # Build a list with countries that don't have owners.
-    extraCountries = []
-    for j in listOfCountries:
-        if j.owner == 0:
-            extraCountries.append(j)
-    # Ask how the players want to raffle the countries.
-    print("There are {} countries to raffle between players".format(amountOfExtraCountries))
-    print("How do you want to raffle the countries:")
-    print("1. Dices")
-    print("2. Random")
-    sel_input = int(input("Select:"))
-    if sel_input == 1:
-        for i in range(len(extraCountries)):
-            print("Roll the dice to win {}".format(extraCountries[i].name))
-            winner = input("Who won?")
-            for p in listOfPlayers:
-                if p.name == winner:
-                    p.countries.add(extraCountries[i])
-                    extraCountries[i].owner = winner
-    if sel_input == 2:
-        playersInRaffle = listOfPlayers
-        for x in range(len(extraCountries)):
-            winner = random.randint(0, len(playersInRaffle))
-            print("{} won {}".format(playersInRaffle[winner].name, extraCountries[x].name))
-            playersInRaffle[winner].countries.add(extraCountries[x])
-            extraCountries[x].owner = playersInRaffle[winner].name
-            playersInRaffle.remove(winner)
-        del playersInRaffle
-    del extraCountries
+    raffleExtraCountries(listOfCountries, listOfPlayers)
+
+# Now  we define each player mission
+selectMission(listOfPlayers, missionList)
+
+# Establish the first turn order of players
+print("Throw dices to establish who starts first on the first round")
+first_turn = input("Who won?")
+for p in listOfPlayers:
+    if p.name == first_turn:
+        p.turn_to_play = True
+
+# First turn of reinforcements

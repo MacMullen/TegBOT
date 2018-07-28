@@ -344,3 +344,7 @@ def initCountryStruct():
                 filehandle)
 
     return listOfCountries, NACountries, SACountries, CACountries, EUCountries, AFRCountries, ASIACountries, OCECountries
+
+
+def initMissionList():
+    return []
