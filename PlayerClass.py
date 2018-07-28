@@ -5,7 +5,7 @@ class Player:
         self.countries = set([])
         self.mission = 0
         self.human = True
-        self.turn_to_play = False
+        self.turn = 99
 
     def convertToBOT(self):
         self.human = False

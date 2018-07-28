@@ -91,3 +91,28 @@ def selectMission(listOfPlayers, missionList):
         print("19. Destruir al jugador de la izquierda")
         mission_index = int(input())
         p.mission = missionList[mission_index - 1]
+
+
+def firstTurn(listOfPlayers):
+    print("Throw the dices to establish who starts first on the first round")
+    first_turn = input("Who won?")
+    first_turn_index = 0
+    for p in listOfPlayers:
+        if first_turn == p.name:
+            first_turn_index = listOfPlayers.index(p)
+            break
+    for p in listOfPlayers:
+        p.turn = listOfPlayers.index(p) - first_turn_index
+
+
+def reinforceCountries(player, n):
+    while True:
+        if n == 0:
+            break
+        else:
+            country = input("Where do you want to reinforce your army?")
+            amount = input("How many chips do you want to add? ({} remaining)".format(n))
+            for c in player.countries:
+                if country == c.name:
+                    c.addReinforcements(amount)
+                    n = n - amount

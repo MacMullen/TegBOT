@@ -75,10 +75,11 @@ if amountOfExtraCountries != 0:
 selectMission(listOfPlayers, missionList)
 
 # Establish the first turn order of players
-print("Throw dices to establish who starts first on the first round")
-first_turn = input("Who won?")
-for p in listOfPlayers:
-    if p.name == first_turn:
-        p.turn_to_play = True
+firstTurn(listOfPlayers)
+sorted(listOfPlayers, key=lambda player_turn: player.turn)
 
 # First turn of reinforcements
+for p in listOfPlayers:
+    reinforceCountries(p, 8)
+for p in listOfPlayers:
+    reinforceCountries(p, 4)
