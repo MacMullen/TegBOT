@@ -7,9 +7,6 @@ from AuxiliaryFunctions import *
 # Initialize the map of game.
 listOfCountries, NACountries, SACountries, CACountries, EUCountries, AFRCountries, ASIACountries, OCECountries = initCountryStruct()
 
-# Initialize the mission list
-missionList = initMissionList()
-
 # Initialize the list of possible colors.
 listOfColors = ["Green", "Yellow", "Blue", "White", "Black", "Red"]
 
@@ -72,7 +69,7 @@ if amountOfExtraCountries != 0:
     raffleExtraCountries(listOfCountries, listOfPlayers)
 
 # Now  we define each player mission
-selectMission(listOfPlayers, missionList)
+selectMission(listOfPlayers)
 
 # Establish the first turn order of players
 firstTurn(listOfPlayers)

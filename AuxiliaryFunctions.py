@@ -1,4 +1,5 @@
 import random
+from main import *
 
 from CountryClass import *
 from TegClass import *
@@ -65,7 +66,7 @@ def raffleExtraCountries(listOfCountries, listOfPlayers):
     del extraCountries
 
 
-def selectMission(listOfPlayers, missionList):
+def selectMission(listOfPlayers):
     for p in listOfPlayers:
         print("What is {} mission? ".format(p.name))
         print("1. Ocupar Europa y America del Sur")
@@ -89,8 +90,7 @@ def selectMission(listOfPlayers, missionList):
         print("17. Destruir al ejercito Amarillo; de ser imposible, al jugador de la derecha")
         print("18. Destruir al ejercito Verde; de ser imposible, al jugador de la derecha")
         print("19. Destruir al jugador de la izquierda")
-        mission_index = int(input())
-        p.mission = missionList[mission_index - 1]
+        p.mission = int(input())
 
 
 def firstTurn(listOfPlayers):
@@ -116,3 +116,130 @@ def reinforceCountries(player, n):
                 if country == c.name:
                     c.addReinforcements(amount)
                     n = n - amount
+
+
+def countriesFrom(continent, countries: set[Country]):
+    sum = 0
+    for c in countries:
+        if c.continent == continent:
+            sum = sum + 1
+
+    return sum
+
+
+def playerGotSixIslands(countries: set[Country]):
+    return True
+
+
+def playerWithColor(color):
+    for p in listOfPlayers:
+        if p.color == color:
+            return p
+
+
+def playerNextTo(player: Player):
+    next_player_index = listOfPlayers.index(player)
+    if next_player_index != (len(listOfPlayers) - 1):
+        return listOfPlayers[next_player_index + 1]
+    else:
+        return listOfPlayers[0]
+
+
+def checkMissionCompletition(player: Player):
+    mission_index = player.mission
+    if mission_index == 1:
+        if EUCountries.issubset(player.countries) and SACountries.issubset(player.countries):
+            print("{} wins!".format(player.name))
+    if mission_index == 2:
+        if NACountries.issubset(player.countries) and OCECountries.issubset(player.countries) and (
+                countriesFrom("AFR", player.countries) == 5):
+            print("{} wins!".format(player.name))
+    if mission_index == 3:
+        if ASIACountries.issubset(player.countries) and CACountries.issubset(player.countries):
+            print("{} wins!".format(player.name))
+    if mission_index == 4:
+        if NACountries.issubset(player.countries) and (countriesFrom("ASIA", player.countries) == 8) and (
+                countriesFrom("EU", player.countries) == 4):
+            print("{} wins!".format(player.name))
+    if mission_index == 5:
+        if (countriesFrom("NA", player.countries) == 4) and (countriesFrom("EU", player.countries) == 4) and (
+                countriesFrom("ASIA", player.countries) == 4) and (countriesFrom("SA", player.countries) == 3) and (
+                countriesFrom("CA", player.countries) == 3) and (countriesFrom("AFR", player.countries) == 3) and (
+                countriesFrom("OCE", player.countries) == 3):
+            print("{} wins!".format(player.name))
+    if mission_index == 6:
+        if OCECountries.issubset(player.countries) and (countriesFrom("ASIA", player.countries) == 6) and (
+                countriesFrom("AFR", player.countries) == 6) and (countriesFrom("NA", player.countries) == 6):
+            print("{} wins!".format(player.name))
+    if mission_index == 7:
+        if CACountries.issubset(player.countries) and (countriesFrom("SA", player.countries) == 6) and (
+                countriesFrom("EU", player.countries) == 6) and (countriesFrom("ASIA", player.countries) == 6):
+            print("{} wins!".format(player.name))
+    if mission_index == 8:
+        if SACountries.issubset(player.countries) and AFRCountries.issubset(player.countries) and (
+                countriesFrom("ASIA", player.countries) == 8):
+            print("{} wins!".format(player.name))
+    if mission_index == 9:
+        if OCECountries.issubset(player.countries) and AFRCountries.issubset(player.countries) and (
+                countriesFrom("CA", player.countries) == 4) and (countriesFrom("ASIA", player.countries) == 4):
+            print("{} wins!".format(player.name))
+    if mission_index == 10:
+        if EUCountries.issubset(player.countries) and (countriesFrom("SA", player.countries) == 4) and (
+                countriesFrom("ASIA", player.countries) == 4):
+            print("{} wins!".format(player.name))
+    if mission_index == 11:
+        if AFRCountries.issubset(player.countries) and (countriesFrom("EU", player.countries) == 4) and (
+                countriesFrom("ASIA", player.countries) == 4) and playerGotSixIslands(player.countries):
+            print("{} wins!".format(player.name))
+    if mission_index == 12:
+        if len(player.countries) == 35:
+            print("{} wins!".format(player.name))
+    if mission_index == 13:
+        if "White" not in listOfColors:
+            if len(playerWithColor("White").countries) == 0:
+                print("{} wins!".format(player.name))
+        else:
+            if len(playerNextTo(player).countries) == 0:
+                print("{} wins!".format(player.name))
+    if mission_index == 14:
+        if "Black" not in listOfColors:
+            if len(playerWithColor("Black").countries) == 0:
+                print("{} wins!".format(player.name))
+        else:
+            if len(playerNextTo(player).countries) == 0:
+                print("{} wins!".format(player.name))
+    if mission_index == 15:
+        if "Red" not in listOfColors:
+            if len(playerWithColor("Red").countries) == 0:
+                print("{} wins!".format(player.name))
+        else:
+            if len(playerNextTo(player).countries) == 0:
+                print("{} wins!".format(player.name))
+    if mission_index == 16:
+        if "Blue" not in listOfColors:
+            if len(playerWithColor("Blue").countries) == 0:
+                print("{} wins!".format(player.name))
+        else:
+            if len(playerNextTo(player).countries) == 0:
+                print("{} wins!".format(player.name))
+    if mission_index == 17:
+        if "Yellow" not in listOfColors:
+            if len(playerWithColor("Yellow").countries) == 0:
+                print("{} wins!".format(player.name))
+        else:
+            if len(playerNextTo(player).countries) == 0:
+                print("{} wins!".format(player.name))
+    if mission_index == 18:
+        if "Green" not in listOfColors:
+            if len(playerWithColor("Green").countries) == 0:
+                print("{} wins!".format(player.name))
+        else:
+            if len(playerNextTo(player).countries) == 0:
+                print("{} wins!".format(player.name))
+    if mission_index == 19:
+        for p in listOfPlayers:
+            if playerNextTo(p) == player:
+                if len(playerNextTo(p).countries) == 0:
+                    print("{} wins!".format(player.name))
+    if len(player.countries) == 45:
+        print("{} wins!".format(player.name))
