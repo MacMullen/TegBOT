@@ -6,6 +6,7 @@ class Player:
         self.mission = 0
         self.human = True
         self.turn = 99
+        self.cardWithdrawn = set([])
 
     def convertToBOT(self):
         self.human = False

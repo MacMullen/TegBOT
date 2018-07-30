@@ -111,9 +111,9 @@ def firstTurn():
             p.turn = 0
             next_turn = 1
             while True:
-                playerToTheRight(p).turn = next_turn
+                playerNextTo(p).turn = next_turn
                 next_turn = next_turn + 1
-                p = playerToTheRight(p)
+                p = playerNextTo(p)
                 if p.name == first_turn:
                     break
 
@@ -288,7 +288,7 @@ def attackCountry(p):
         for k in c.neighbours:
             if k.owner != p.name:
                 print("{}. {}".format(i, k.name))
-                i = i + 1
+                i += 1
     country_to_attack = input()
     print("With what country do you want to attack {}".format(country_to_attack))
     country_to_attack = getCountryByName(country_to_attack)
@@ -296,6 +296,7 @@ def attackCountry(p):
     for c in country_to_attack.neighbours:
         if c.owner == p.name:
             print("{}. {}".format(i, c.name))
+            i += 1
     attack_from_country = input()
     attack_from_country = getCountryByName(attack_from_country)
     print("Roll Dices...")
@@ -336,7 +337,16 @@ def attackCountry(p):
     defender_dices.sort()
     attacker_lost_chips = 0
     defender_lost_chips = 0
-
+    while len(defender_dices) > len(attacker_dices) or len(attacker_dices) > len(defender_dices):
+        if len(defender_dices) > len(attacker_dices):
+            defender_dices.pop()
+        if len(defender_dices) < len(attacker_dices):
+            attacker_dices.pop()
+    for x in range(len(attacker_dices)):
+        if attacker_dices[x] > defender_dices[x]:
+            defender_lost_chips += 1
+        else:
+            attacker_lost_chips += 1
     attack_from_country.loseChips(attacker_lost_chips)
     country_to_attack.loseChips(defender_lost_chips)
     if country_to_attack.playerChips <= 0:
@@ -346,3 +356,62 @@ def attackCountry(p):
         country_to_attack.addReinforcements(amount_of_chips)
         return 1
     return 0
+
+
+def regroupPhase(p):
+    print("Do you want to move chips?")
+    print("1. Yes")
+    print("2. No")
+    want_to_regroup = int(input())
+    if want_to_regroup == 2:
+        return
+    assert isinstance(p, Player)
+    print("From which country do you want to move chips?")
+    country_from = input()
+    country_from = getCountryByName(country_from)
+    i = 1
+    for c in p.countries:
+        print("{}. {}".format(i, c.name))
+        i += 1
+    print("To which country do you want to move chips?")
+    i = 1
+    for c in country_from.neighbours:
+        if c.owner == p.name:
+            print("{}. {}".format(i, c.name))
+            i += 1
+    country_to = input()
+    country_to = getCountryByName(country_to)
+    print("How many chips?")
+    amount = input()
+    country_from.loseChips(amount)
+    country_to.addReinforcements(amount)
+    print("Done")
+
+
+def withdrawCard(p):
+    assert isinstance(p, Player)
+    print("Withdraw a card")
+    print("Which country is it?")
+    card_country = input()
+    card_country = getCountryByName(card_country)
+    if card_country in p.countries:
+        card_country.addReinforcements(3)
+    print("What type of card is it?")
+    print("1. Soldier")
+    print("2. Plane")
+    print("3. Anchor")
+    print("4. Supercard")
+    type_of_card = int(input())
+    p.cardWithdrawn.add(type_of_card)
+
+
+def nextTurn():
+    for p in listOfPlayers:
+        if p.turn == 0:
+            p.turn = playerToTheRight(p).turn
+        else:
+            p.turn -= 1
+    sorted(listOfPlayers, key=lambda p_turn: p.turn)
+    for p in listOfPlayers:
+        amount = int(len(p.countries) / 2)
+        reinforceCountries(p, amount)

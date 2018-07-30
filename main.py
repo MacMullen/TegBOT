@@ -30,6 +30,7 @@ while True:
     else:
         break
 
+# Let's ask how many BOTS are going to play
 while True:
     numberOfBots = int(input("How many BOTS do you want to add to the game? "))
     if (numberOfBots > 6 - numberOfPlayers):
@@ -42,8 +43,8 @@ amountOfInitialCountries = int(len(listOfCountries) / (numberOfPlayers + numberO
 amountOfExtraCountries = len(listOfCountries) % (numberOfPlayers + numberOfBots)
 print("Each player will start with {} countries".format(amountOfInitialCountries))
 
-for i in range(1, numberOfPlayers):
-    name = input("What is the name of player {}? ".format(i))
+for i in range(numberOfPlayers):
+    name = input("What is the name of player {}? ".format(i + 1))
     while True:
         color = input("What color do you want to use? ")
         if color not in listOfColors:
