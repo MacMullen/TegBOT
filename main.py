@@ -1,6 +1,3 @@
-from CountryClass import *
-from TegClass import *
-from PlayerClass import *
 from DataInit import *
 from AuxiliaryFunctions import *
 
@@ -25,7 +22,7 @@ rest = False
 # Let's ask how many players are going to play
 while True:
     numberOfPlayers = int(input("How many players are going to play? "))
-    if (numberOfPlayers > 6):
+    if numberOfPlayers > 6:
         print("Too many players")
     else:
         break
@@ -33,7 +30,7 @@ while True:
 # Let's ask how many BOTS are going to play
 while True:
     numberOfBots = int(input("How many BOTS do you want to add to the game? "))
-    if (numberOfBots > 6 - numberOfPlayers):
+    if numberOfBots > 6 - numberOfPlayers:
         print("Too many BOTS")
     else:
         break
@@ -56,8 +53,11 @@ for i in range(numberOfPlayers):
     player = Player(name, color)
 
     print("Which countries are you starting with? ")
-    initPlayerContries(player)
-
+    # initPlayerCountries(player,amountOfInitialCountries,listOfCountries)
+    i = 0
+    while i < 36:
+        player.countries.add(random.sample(listOfCountries, 1).pop())
+        i += 1
     listOfPlayers.append(player)
 
 # Now, let's setup the bots
@@ -69,20 +69,20 @@ for i in range(numberOfBots):
     bot = Player(name, color)
 
     print("Which countries is BOT_{} starting with?".format(i))
-    initPlayerContries(bot)
+    initPlayerCountries(bot, amountOfInitialCountries, listOfCountries)
 
     bot.convertToBOT()
     listOfPlayers.append(bot)
 
 # Raffle the extra countries.
 if amountOfExtraCountries != 0:
-    raffleExtraCountries()
+    raffleExtraCountries(listOfCountries, amountOfExtraCountries, listOfPlayers)
 
 # Now  we define each player mission
-selectMission()
+selectMission(listOfPlayers)
 
 # Establish the first turn order of players
-firstTurn()
+firstTurn(listOfPlayers)
 sorted(listOfPlayers, key=lambda player_turn: player.turn)
 
 # First turn of reinforcements
@@ -97,8 +97,9 @@ while True:
         if not p.human:
             i = 0
             # TODO: Develop BOT Intelligence
-        conquered = attackPhase(p)
-        regroupPhase(p)
-        if conquered:
-            withdrawCard(p)
-    nextTurn()
+        else:
+            conquered = attackPhase(p, listOfCountries)
+            regroupPhase(p, listOfCountries)
+            if conquered:
+                withdrawCard(p, listOfCountries)
+    nextTurn(listOfPlayers)

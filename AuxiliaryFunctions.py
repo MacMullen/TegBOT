@@ -1,48 +1,58 @@
 import random
-from main import *
 
-from CountryClass import *
-from TegClass import *
 from PlayerClass import *
-from DataInit import *
 
 
-def initPlayerContries(player):
+def initPlayerCountries(player, amountOfInitialCountries, listOfCountries):
     for i in range(amountOfInitialCountries):
         country = input()
         while True:
-            if (searchInCountries(listOfCountries, country)):
-                if (searchInCountries(player.countries, country)):
+            if searchInCountries(listOfCountries, country):
+                if searchInCountries(player.countries, country):
                     print("Country already in the list.")
-                    country = print()
+                    country = input()
                 else:
                     break
             else:
                 print("Not a valid country")
                 country = input()
         for j in listOfCountries:
-            if (j.name == country):
+            if j.name == country:
                 player.addCountry(j)
                 j.owner = player.name
 
 
 def searchInCountries(listOfCountries, country):
     for j in listOfCountries:
-        if (j.name == country):
+        if j.name == country:
             return True
 
     return False
 
 
-def getCountryByName(country):
+def getCountryByName(country, listOfCountries):
     for c in listOfCountries:
         if country == c.name:
             return c
-        else:
-            print("That country doesn't exists")
 
 
-def raffleExtraCountries():
+def playerToTheRight(player, listOfPlayers):
+    player_index = listOfPlayers.index(player)
+    if player_index == 0:
+        return listOfPlayers[len(listOfPlayers) - 1]
+    else:
+        return listOfPlayers[player_index - 1]
+
+
+def playerNextTo(player, listOfPlayers):
+    player_index = listOfPlayers.index(player)
+    if player_index != (len(listOfPlayers) - 1):
+        return listOfPlayers[player_index + 1]
+    else:
+        return listOfPlayers[0]
+
+
+def raffleExtraCountries(listOfCountries, amountOfExtraCountries, listOfPlayers):
     # Build a list with countries that don't have owners.
     extraCountries = []
     for j in listOfCountries:
@@ -74,7 +84,7 @@ def raffleExtraCountries():
     del extraCountries
 
 
-def selectMission():
+def selectMission(listOfPlayers):
     for p in listOfPlayers:
         print("What is {} mission? ".format(p.name))
         print("1. Ocupar Europa y America del Sur")
@@ -89,7 +99,8 @@ def selectMission():
         print("9. Ocupar OCeania, Africa, 4 paises de America Central y 4 de Asia")
         print("10. Ocupar Europa, 4 paises de Asia y 4 paises de America del Sur")
         print(
-            "11. Ocupar Africa, 4 paises de Europa, 4 paises de Asia y 6 islas, repartidas en por lo menos 3 continentes")
+            "11. Ocupar Africa, 4 paises de Europa, 4 paises de Asia y 6 islas, repartidas en por lo menos 3 "
+            "continentes")
         print("12. Ocupar 35 paises en cualquier lugar del mapa")
         print("13. Destruir al ejercito Blanco; de ser imposible, al jugador de la derecha")
         print("14. Destruir al ejercito Negro; de ser imposible, al jugador de la derecha")
@@ -101,19 +112,18 @@ def selectMission():
         p.mission = int(input())
 
 
-def firstTurn():
+def firstTurn(listOfPlayers):
     print("Throw the dices to establish who starts first on the first round")
     first_turn = input("Who won?")
-    first_turn_index = 0
     for p in listOfPlayers:
         assert isinstance(p, Player)
         if first_turn == p.name:
             p.turn = 0
             next_turn = 1
             while True:
-                playerNextTo(p).turn = next_turn
+                playerNextTo(p, listOfPlayers).turn = next_turn
                 next_turn = next_turn + 1
-                p = playerNextTo(p)
+                p = playerNextTo(p, listOfPlayers)
                 if p.name == first_turn:
                     break
 
@@ -123,52 +133,39 @@ def reinforceCountries(player, n):
         if n == 0:
             break
         else:
-            country = input("Where do you want to reinforce your army?")
-            amount = input("How many chips do you want to add? ({} remaining)".format(n))
+            print("Where do you want to reinforce your army?")
+            for c in player.countries:
+                print(c.name)
+            country = input()
+            amount = int(input("How many chips do you want to add? ({} remaining)".format(n)))
             for c in player.countries:
                 if country == c.name:
                     c.addReinforcements(amount)
                     n = n - amount
 
 
-def countriesFrom(continent, countries: set[Country]):
-    sum = 0
+def countriesFrom(continent, countries):
+    _sum = 0
     for c in countries:
         if c.continent == continent:
-            sum = sum + 1
+            _sum += 1
 
-    return sum
+    return _sum
 
 
-def playerGotSixIslands(countries: set[Country]):
+def playerGotSixIslands(countries):
+    # TODO
     return True
 
 
-def playerWithColor(color):
+def playerWithColor(color, listOfPlayers):
     for p in listOfPlayers:
         if p.color == color:
             return p
 
 
-def playerToTheRight(player):
-    assert isinstance((player, Player))
-    player_index = listOfPlayers.index(player)
-    if player_index == 0:
-        return listOfPlayers[len(listOfPlayers) - 1]
-    else:
-        return listOfPlayers[player_index - 1]
-
-
-def playerNextTo(player):
-    assert isinstance((player, Player))
-    player_index = listOfPlayers.index(player)
-    if player_index != (len(listOfPlayers) - 1):
-        return listOfPlayers[player_index + 1]
-    else:
-        return listOfPlayers[0]
-
-
-def checkMissionCompletition(player: Player):
+def checkMissionCompletition(player, EUCountries, SACountries, NACountries, OCECountries, ASIACountries, CACountries,
+                             AFRCountries, listOfColors, listOfPlayers):
     mission_index = player.mission
     if mission_index == 1:
         if EUCountries.issubset(player.countries) and SACountries.issubset(player.countries):
@@ -219,69 +216,55 @@ def checkMissionCompletition(player: Player):
             print("{} wins!".format(player.name))
     if mission_index == 13:
         if "White" not in listOfColors:
-            if len(playerWithColor("White").countries) == 0:
+            if len(playerWithColor("White", listOfPlayers).countries) == 0:
                 print("{} wins!".format(player.name))
         else:
-            if len(playerToTheRight(player).countries) == 0:
+            if len(playerToTheRight(player, listOfPlayers).countries) == 0:
                 print("{} wins!".format(player.name))
     if mission_index == 14:
         if "Black" not in listOfColors:
-            if len(playerWithColor("Black").countries) == 0:
+            if len(playerWithColor("Black", listOfPlayers).countries) == 0:
                 print("{} wins!".format(player.name))
         else:
-            if len(playerToTheRight(player).countries) == 0:
+            if len(playerToTheRight(player, listOfPlayers).countries) == 0:
                 print("{} wins!".format(player.name))
     if mission_index == 15:
         if "Red" not in listOfColors:
-            if len(playerWithColor("Red").countries) == 0:
+            if len(playerWithColor("Red", listOfPlayers).countries) == 0:
                 print("{} wins!".format(player.name))
         else:
-            if len(playerToTheRight(player).countries) == 0:
+            if len(playerToTheRight(player, listOfPlayers).countries) == 0:
                 print("{} wins!".format(player.name))
     if mission_index == 16:
         if "Blue" not in listOfColors:
-            if len(playerWithColor("Blue").countries) == 0:
+            if len(playerWithColor("Blue", listOfPlayers).countries) == 0:
                 print("{} wins!".format(player.name))
         else:
-            if len(playerToTheRight(player).countries) == 0:
+            if len(playerToTheRight(player, listOfPlayers).countries) == 0:
                 print("{} wins!".format(player.name))
     if mission_index == 17:
         if "Yellow" not in listOfColors:
-            if len(playerWithColor("Yellow").countries) == 0:
+            if len(playerWithColor("Yellow", listOfPlayers).countries) == 0:
                 print("{} wins!".format(player.name))
         else:
-            if len(playerToTheRight(player).countries) == 0:
+            if len(playerToTheRight(player, listOfPlayers).countries) == 0:
                 print("{} wins!".format(player.name))
     if mission_index == 18:
         if "Green" not in listOfColors:
-            if len(playerWithColor("Green").countries) == 0:
+            if len(playerWithColor("Green", listOfPlayers).countries) == 0:
                 print("{} wins!".format(player.name))
         else:
-            if len(playerToTheRight(player).countries) == 0:
+            if len(playerToTheRight(player, listOfPlayers).countries) == 0:
                 print("{} wins!".format(player.name))
     if mission_index == 19:
         for p in listOfPlayers:
-            if len(playerNextTo(p).countries) == 0:
+            if len(playerNextTo(p, listOfPlayers).countries) == 0:
                 print("{} wins!".format(player.name))
     if len(player.countries) == 45:
         print("{} wins!".format(player.name))
 
 
-def attackPhase(p):
-    assert isinstance(p, Player)
-    conquered = 0
-    while True:
-        print("Do you want to attack?")
-        print("1. Yes")
-        print("2. No")
-        want_to_attack = int(input())
-        if want_to_attack == 2:
-            return conquered
-        else:
-            conquered = conquered + attackCountry(p)
-
-
-def attackCountry(p):
+def attackCountry(p, listOfCountries):
     print("Which country do you want to attack:")
     i = 1
     for c in p.countries:
@@ -291,14 +274,14 @@ def attackCountry(p):
                 i += 1
     country_to_attack = input()
     print("With what country do you want to attack {}".format(country_to_attack))
-    country_to_attack = getCountryByName(country_to_attack)
+    country_to_attack = getCountryByName(country_to_attack, listOfCountries)
     i = 1
     for c in country_to_attack.neighbours:
         if c.owner == p.name:
             print("{}. {}".format(i, c.name))
             i += 1
     attack_from_country = input()
-    attack_from_country = getCountryByName(attack_from_country)
+    attack_from_country = getCountryByName(attack_from_country, listOfCountries)
     print("Roll Dices...")
     print("Result for attacker:")
     attacker_dices = []
@@ -358,7 +341,20 @@ def attackCountry(p):
     return 0
 
 
-def regroupPhase(p):
+def attackPhase(p, listOfCountries):
+    conquered = 0
+    while True:
+        print("Do you want to attack?")
+        print("1. Yes")
+        print("2. No")
+        want_to_attack = int(input())
+        if want_to_attack == 2:
+            return conquered
+        else:
+            conquered = conquered + attackCountry(p, listOfCountries)
+
+
+def regroupPhase(p, listOfCountries):
     print("Do you want to move chips?")
     print("1. Yes")
     print("2. No")
@@ -367,12 +363,12 @@ def regroupPhase(p):
         return
     assert isinstance(p, Player)
     print("From which country do you want to move chips?")
-    country_from = input()
-    country_from = getCountryByName(country_from)
     i = 1
     for c in p.countries:
         print("{}. {}".format(i, c.name))
         i += 1
+    country_from = input()
+    country_from = getCountryByName(country_from, listOfCountries)
     print("To which country do you want to move chips?")
     i = 1
     for c in country_from.neighbours:
@@ -380,7 +376,7 @@ def regroupPhase(p):
             print("{}. {}".format(i, c.name))
             i += 1
     country_to = input()
-    country_to = getCountryByName(country_to)
+    country_to = getCountryByName(country_to, listOfCountries)
     print("How many chips?")
     amount = input()
     country_from.loseChips(amount)
@@ -388,12 +384,12 @@ def regroupPhase(p):
     print("Done")
 
 
-def withdrawCard(p):
+def withdrawCard(p, listOfCountries):
     assert isinstance(p, Player)
     print("Withdraw a card")
     print("Which country is it?")
     card_country = input()
-    card_country = getCountryByName(card_country)
+    card_country = getCountryByName(card_country, listOfCountries)
     if card_country in p.countries:
         card_country.addReinforcements(3)
     print("What type of card is it?")
@@ -405,10 +401,10 @@ def withdrawCard(p):
     p.cardWithdrawn.add(type_of_card)
 
 
-def nextTurn():
+def nextTurn(listOfPlayers):
     for p in listOfPlayers:
         if p.turn == 0:
-            p.turn = playerToTheRight(p).turn
+            p.turn = playerToTheRight(p, listOfPlayers).turn
         else:
             p.turn -= 1
     sorted(listOfPlayers, key=lambda p_turn: p.turn)
