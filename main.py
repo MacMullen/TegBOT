@@ -11,7 +11,7 @@ listOfColors = ["Green", "Yellow", "Blue", "White", "Black", "Red"]
 listOfPlayers = []
 
 # Initiliaze the modifiers
-snow: False
+snow = False
 tailwind = False
 crisis = False
 extra_reinforcements = False
@@ -53,12 +53,7 @@ for i in range(numberOfPlayers):
     player = Player(name, color)
 
     print("Which countries are you starting with? ")
-    # initPlayerCountries(player,amountOfInitialCountries,listOfCountries)
-    i = 0
-    while i < 36:
-        player.countries.add(random.sample(listOfCountries, 1).pop())
-        i += 1
-    listOfPlayers.append(player)
+    initPlayerCountries(player, amountOfInitialCountries, listOfCountries)
 
 # Now, let's setup the bots
 for i in range(numberOfBots):
