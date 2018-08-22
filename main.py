@@ -18,6 +18,7 @@ extra_reinforcements = False
 open_borders = False
 closed_borders = False
 rest = False
+globalSituations = [snow, tailwind, crisis, extra_reinforcements, open_borders, closed_borders, rest]
 
 # Let's ask how many players are going to play
 while True:
@@ -88,6 +89,7 @@ for p in listOfPlayers:
 
 # Begin the game
 while True:
+    pickSituationCard(globalSituations)
     for p in listOfPlayers:
         if not p.human:
             i = 0

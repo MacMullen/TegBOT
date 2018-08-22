@@ -411,3 +411,13 @@ def nextTurn(listOfPlayers):
     for p in listOfPlayers:
         amount = int(len(p.countries) / 2)
         reinforceCountries(p, amount)
+
+
+def pickSituationCard(globalSituations: list):
+    print("Please pick a situation card")
+    card = input("Which card was withdrawn?")
+    for situtuaion in globalSituations:
+        if card == situtuaion:
+            situtuaion = True
+        else:
+            situtuaion = False
